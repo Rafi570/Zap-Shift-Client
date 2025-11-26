@@ -1,21 +1,26 @@
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
+// import useAuth from '../../../hooks/useAuth';
+// import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import { FiEdit } from "react-icons/fi";
+import { FaMagnifyingGlass, FaTrashCan } from "react-icons/fa6";
+import Swal from "sweetalert2";
+import { Link } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
-import { useQuery } from "@tanstack/react-query";
-import { FaMagnifyingGlass, FaTrashCan } from "react-icons/fa6";
-import { FiEdit } from "react-icons/fi";
-import Swal from "sweetalert2";
 
 const MyParcels = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
+
   const { data: parcels = [], refetch } = useQuery({
-    queryKey: ["myParcels", user?.email],
+    queryKey: ["my-parcels", user?.email],
     queryFn: async () => {
       const res = await axiosSecure.get(`/parcels?email=${user.email}`);
       return res.data;
     },
   });
+
   const handleParcelDelete = (id) => {
     console.log(id);
 
@@ -46,6 +51,7 @@ const MyParcels = () => {
       }
     });
   };
+
   const handlePayment = async (parcel) => {
     const paymentInfo = {
       cost: parcel.cost,
@@ -61,6 +67,7 @@ const MyParcels = () => {
     console.log(res.data.url);
     window.location.assign(res.data.url);
   };
+
   return (
     <div>
       <h2>All of my parcels : {parcels.length}</h2>
@@ -73,6 +80,7 @@ const MyParcels = () => {
               <th>Name</th>
               <th>Cost</th>
               <th>Payment</th>
+              <th>Tracking Id</th>
               <th>Delivery Status</th>
               <th>Actions</th>
             </tr>
@@ -95,6 +103,7 @@ const MyParcels = () => {
                     </button>
                   )}
                 </td>
+                <td>{parcel.trackingId}</td>
                 <td>{parcel.deliveryStatus}</td>
                 <td>
                   <button className="btn btn-square hover:bg-primary">

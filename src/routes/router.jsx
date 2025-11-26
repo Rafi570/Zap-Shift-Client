@@ -17,6 +17,9 @@ import PaymentSuccess from "../pages/Dashboard/Payment/PaymentSuccess";
 import PaymentCancelled from "../pages/Dashboard/Payment/PaymentCancelled";
 import PaymentHistory from "../pages/Dashboard/PaymentHistory/PaymentHistory";
 import ApproveRiders from "../pages/Dashboard/ApproveRiders/ApproveRiders";
+import UsersManagement from "../pages/Dashboard/UsersManagement/UsersManagement";
+import AdminRoute from "./AdminRoute/AdminRoute";
+import AssignRiders from "../pages/Dashboard/AssignRiders/AssignRiders";
 
 export const router = createBrowserRouter([
   {
@@ -51,14 +54,14 @@ export const router = createBrowserRouter([
     ],
   },
   {
-        path: "/rider",
-        element: (
-          <PrivateRoute>
-            <Rider></Rider>
-          </PrivateRoute>
-        ),
-        loader: () => fetch("/serviceCenters.json").then((res) => res.json()),
-      },
+    path: "/rider",
+    element: (
+      <PrivateRoute>
+        <Rider></Rider>
+      </PrivateRoute>
+    ),
+    loader: () => fetch("/serviceCenters.json").then((res) => res.json()),
+  },
   {
     path: "/",
     Component: AuthLayout,
@@ -67,7 +70,6 @@ export const router = createBrowserRouter([
         path: "/login",
         Component: Login,
       },
-      
 
       {
         path: "/register",
@@ -100,8 +102,28 @@ export const router = createBrowserRouter([
         Component: PaymentCancelled,
       },
       {
+        path: "assign-riders",
+        element: (
+          <AdminRoute>
+            <AssignRiders></AssignRiders>
+          </AdminRoute>
+        ),
+      },
+      {
         path: "approve-riders",
-        Component: ApproveRiders,
+        element: (
+          <AdminRoute>
+            <ApproveRiders></ApproveRiders>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "users-management",
+        element: (
+          <AdminRoute>
+            <UsersManagement></UsersManagement>
+          </AdminRoute>
+        ),
       },
       {
         path: "payment-history",
