@@ -55,7 +55,6 @@ const DashboardLayout = () => {
 
         <aside className="w-64 min-h-full bg-base-100 border-r p-4">
           <ul className="menu flex flex-col gap-2">
-
             {/* Homepage */}
             <li>
               <Link className={baseClass} to="/">
@@ -126,6 +125,33 @@ const DashboardLayout = () => {
                   >
                     <FaCheckCircle className="text-xl" />
                     <span>Approve Riders</span>
+                  </NavLink>
+                </li>
+              </>
+            )}
+            {/* rider Route  */}
+            {role === "rider" && (
+              <>
+                <li>
+                  <NavLink
+                    to="/dashboard/completed-deliveries"
+                    className={({ isActive }) =>
+                      isActive ? `${baseClass} ${activeClass}` : baseClass
+                    }
+                  >
+                    <FaUsers className="text-xl" />
+                    <span>Complete Deliveries</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/dashboard/assigned-deliveries"
+                    className={({ isActive }) =>
+                      isActive ? `${baseClass} ${activeClass}` : baseClass
+                    }
+                  >
+                    <FaUsers className="text-xl" />
+                    <span>Assigned Deliveries</span>
                   </NavLink>
                 </li>
               </>
