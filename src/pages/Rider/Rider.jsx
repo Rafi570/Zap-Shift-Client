@@ -36,7 +36,7 @@ const Rider = () => {
               timer: 2000,
             });
             reset();
-            navigate("/dashboard/my-riders");
+            navigate("/");
           }
         });
       }

@@ -98,16 +98,21 @@ const ApproveRiders = () => {
                   </td>
                   <td className="py-3 px-4 capitalize">{rider.workStatus}</td>
                   <td className="py-3 px-4 flex items-center justify-center gap-2">
+                    {/* Approve button disabled if status is approved */}
                     <button
                       onClick={() => updateRiderStatus(rider, "approved")}
-                      className="flex items-center gap-2 btn btn-primary hover:bg-primary/20  text-black px-4 py-2 rounded-lg font-semibold transition"
+                      className="flex items-center gap-2 btn btn-primary hover:bg-primary/20 text-black px-4 py-2 rounded-lg font-semibold transition disabled:opacity-50"
+                      disabled={rider.status === "approved"}
                     >
                       <FaUserCheck />
                       Approve
                     </button>
+
+                    {/* Reject button disabled if status is pending */}
                     <button
                       onClick={() => updateRiderStatus(rider, "rejected")}
-                      className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition"
+                      className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition disabled:opacity-50"
+                      disabled={rider.status === "rejected"}
                     >
                       <IoPersonRemoveSharp />
                       Reject

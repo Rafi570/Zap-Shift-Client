@@ -20,7 +20,7 @@ const PaymentSuccess = () => {
             trackingId: res.data.trackingId,
           });
         })
-        .catch((err) => console.log(err));
+        .catch((err) =>{});
     }
   }, [sessionId, axiosSecure]);
 

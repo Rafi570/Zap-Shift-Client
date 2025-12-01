@@ -48,11 +48,11 @@ const Register = () => {
             };
             updateUserProfile(userProfile)
               .then(() => navigate(location.state || "/"))
-              .catch(console.log);
+              .catch();
           })
-          .catch(console.log);
+          .catch();
       })
-      .catch(console.log);
+      .catch();
   };
 
   return (

@@ -2,12 +2,14 @@ import React from "react";
 import { Link, NavLink } from "react-router";
 import useAuth from "../../../hooks/useAuth";
 import Logo from "../../../components/Logo/Logo";
+import useRole from "../../../hooks/useRole";
 
 const NavBar = () => {
   const { user, logOut } = useAuth();
+  const { role } = useRole();
 
   const handleLogOut = () => {
-    logOut().catch(console.log);
+    logOut().catch();
   };
 
   const activeClass = "text-primary font-semibold border-b-2 border-primary";
@@ -56,7 +58,7 @@ const NavBar = () => {
   );
 
   return (
-    <div className="navbar bg-base-100 shadow-sm px-2 lg:px-6">
+    <div className="navbar   px-2 lg:px-6 ">
       {/* LEFT SECTION */}
       <div className="navbar-start flex items-center gap-2">
         {/* Mobile Dropdown */}
@@ -93,7 +95,9 @@ const NavBar = () => {
 
       {/* CENTER LINKS (Desktop) */}
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 flex items-center gap-2">{links}</ul>
+        <ul className="menu menu-horizontal px-1 flex items-center gap-2">
+          {links}
+        </ul>
       </div>
 
       {/* RIGHT SECTION BUTTONS */}
@@ -109,9 +113,12 @@ const NavBar = () => {
         )}
 
         {/* Rider Button */}
-        <Link className="btn btn-primary text-black btn-sm" to="/rider">
-          Be a Rider
-        </Link>
+
+        {role !== "rider" && (
+          <Link className="btn btn-primary text-black btn-sm" to="/rider">
+            Be a Rider
+          </Link>
+        )}
       </div>
     </div>
   );

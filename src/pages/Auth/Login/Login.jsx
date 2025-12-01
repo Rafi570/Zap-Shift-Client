@@ -13,7 +13,7 @@ const Login = () => {
     const handleLogin = (data) => {
         signInUser(data.email, data.password)
             .then(() => navigate(location?.state || '/'))
-            .catch(console.log);
+            .catch();
     };
 
     return (
