@@ -2,112 +2,165 @@ import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import useAuth from "../../hooks/useAuth";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import Swal from "sweetalert2";
-import rider from '../../assets/agent-pending.png';
 
 const Rider = () => {
-  const { register, handleSubmit, control } = useForm();
+  const { register, handleSubmit, control, formState: { errors }, reset } = useForm();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
-
   const serviceCenters = useLoaderData();
-  const regionsDuplicate = serviceCenters.map((c) => c.region);
-  const regions = [...new Set(regionsDuplicate)];
+  const navigate = useNavigate();
 
-  const districtsByRegion = (region) => {
-    const regionDistricts = serviceCenters.filter((c) => c.region === region);
-    return regionDistricts.map((d) => d.district);
-  };
-
+  const regions = [...new Set(serviceCenters.map(c => c.region))];
   const riderRegion = useWatch({ control, name: "region" });
 
+  const districtsByRegion = (region) =>
+    serviceCenters.filter(c => c.region === region).map(d => d.district);
+
   const handleRiderApplication = (data) => {
-    axiosSecure.post("/riders", data).then((res) => {
-      if (res.data.insertedId) {
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Your application has been submitted.",
-          showConfirmButton: false,
-          timer: 2000,
+    Swal.fire({
+      title: "Submit Application?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, submit",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure.post("/riders", data).then(res => {
+          if (res.data.insertedId) {
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Your application has been submitted.",
+              showConfirmButton: false,
+              timer: 2000,
+            });
+            reset();
+            navigate("/dashboard/my-riders");
+          }
         });
       }
     });
   };
 
   return (
-    <div className="w-full px-6 py-10 bg-gray-50 rounded-xl shadow-sm">
-    
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+    <div className="py-16 px-6 lg:px-20">
+      <div className="bg-white shadow-xl rounded-2xl p-10 border border-gray-200">
+        <h2 className="text-3xl md:text-4xl font-bold text-primary mb-2">Be a Rider</h2>
+        <p className="text-gray-500 mb-8 max-w-xl">
+          Join our fast, reliable delivery service. Fill out your details below.
+        </p>
 
-        <div>
-          <h2 className="text-4xl font-bold text-primary mb-3">Be a Rider</h2>
-          <p className="text-gray-600 mb-10 max-w-lg">
-            Enjoy fast, reliable parcel delivery with real‑time tracking and zero hassle.
-            From personal packages to business shipments — we deliver on time, every time.
-          </p>
+        <form onSubmit={handleSubmit(handleRiderApplication)} className="space-y-8">
 
-          <form onSubmit={handleSubmit(handleRiderApplication)} className="space-y-8">
+          <div className="grid md:grid-cols-2 gap-6">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Rider Details */}
+            <div className="bg-gray-50 p-6 rounded-xl shadow-md border space-y-4">
+              <h3 className="text-2xl font-semibold text-secondary mb-4">Rider Details</h3>
 
-              {/* LEFT */}
-              <div className="bg-white p-6 rounded-xl shadow-md border">
-                <h4 className="text-xl font-semibold mb-4">Rider Details</h4>
-
-                <label className="text-sm font-medium">Rider Name</label>
-                <input type="text" {...register("name")} defaultValue={user?.displayName}
-                  className="input w-full bg-gray-100 border rounded-lg p-2 mb-3" />
-
-                <label className="text-sm font-medium">Email</label>
-                <input type="text" {...register("email")} defaultValue={user?.email}
-                  className="input w-full bg-gray-100 border rounded-lg p-2 mb-3" />
-
-                <label className="text-sm font-medium">Region</label>
-                <select {...register("region")} defaultValue="Pick a region"
-                  className="select w-full bg-gray-100 border rounded-lg p-2 mb-3">
-                  <option disabled>Pick a region</option>
-                  {regions.map((r, i) => <option key={i}>{r}</option>)}
-                </select>
-
-                <label className="text-sm font-medium">District</label>
-                <select {...register("district")} defaultValue="Pick a district"
-                  className="select w-full bg-gray-100 border rounded-lg p-2">
-                  <option disabled>Pick a district</option>
-                  {districtsByRegion(riderRegion)?.map((d, i) => <option key={i}>{d}</option>)}
-                </select>
-
-                <label className="text-sm font-medium mt-4 block">Your Address</label>
-                <input type="text" {...register("address")} className="input w-full bg-gray-100 border rounded-lg p-2" />
+              <div>
+                <label className="font-semibold">Rider Name</label>
+                <input
+                  type="text"
+                  {...register("name", { required: "Name is required" })}
+                  defaultValue={user?.displayName}
+                  className="input input-bordered w-full mt-1"
+                />
+                {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
               </div>
 
-              {/* RIGHT */}
-              <div className="bg-white p-6 rounded-xl shadow-md border">
-                <h4 className="text-xl font-semibold mb-4">More Details</h4>
+              <div>
+                <label className="font-semibold">Email</label>
+                <input
+                  type="email"
+                  {...register("email", { required: "Email is required" })}
+                  defaultValue={user?.email}
+                  className="input input-bordered w-full mt-1"
+                />
+                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+              </div>
 
-                <label className="text-sm font-medium">Driving License</label>
-                <input type="text" {...register("license")} className="input w-full bg-gray-100 border rounded-lg p-2 mb-3" />
+              <div>
+                <label className="font-semibold">Region</label>
+                <select
+                  {...register("region", { required: "Region is required" })}
+                  className="select select-bordered w-full mt-1"
+                >
+                  <option value="">Select Region</option>
+                  {regions.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+                {errors.region && <p className="text-red-500 text-sm">{errors.region.message}</p>}
+              </div>
 
-                <label className="text-sm font-medium">NID</label>
-                <input type="text" {...register("nid")} className="input w-full bg-gray-100 border rounded-lg p-2 mb-3" />
+              <div>
+                <label className="font-semibold">District</label>
+                <select
+                  {...register("district", { required: "District is required" })}
+                  className="select select-bordered w-full mt-1"
+                >
+                  <option value="">Select District</option>
+                  {districtsByRegion(riderRegion)?.map(d => <option key={d}>{d}</option>)}
+                </select>
+                {errors.district && <p className="text-red-500 text-sm">{errors.district.message}</p>}
+              </div>
 
-                <label className="text-sm font-medium">Bike</label>
-                <input type="text" {...register("bike")} className="input w-full bg-gray-100 border rounded-lg p-2" />
+              <div>
+                <label className="font-semibold">Address</label>
+                <input
+                  type="text"
+                  {...register("address", { required: "Address is required" })}
+                  className="input input-bordered w-full mt-1"
+                />
+                {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
               </div>
             </div>
 
-            <button type="submit" className="w-full bg-lime-400 hover:bg-lime-500 text-black font-semibold py-3 rounded-lg transition">
-              Apply as a Rider
-            </button>
-          </form>
-        </div>
+            {/* More Details */}
+            <div className="bg-gray-50 p-6 rounded-xl shadow-md border space-y-4">
+              <h3 className="text-2xl font-semibold text-secondary mb-4">More Details</h3>
 
-        {/* IMAGE */}
-        <div className="flex justify-center items-start">
-          <img src={rider} alt="rider" className="w-3/4 drop-shadow-xl" />
-        </div>
+              <div>
+                <label className="font-semibold">Driving License</label>
+                <input
+                  type="text"
+                  {...register("license", { required: "License is required" })}
+                  className="input input-bordered w-full mt-1"
+                />
+                {errors.license && <p className="text-red-500 text-sm">{errors.license.message}</p>}
+              </div>
 
+              <div>
+                <label className="font-semibold">NID</label>
+                <input
+                  type="text"
+                  {...register("nid", { required: "NID is required" })}
+                  className="input input-bordered w-full mt-1"
+                />
+                {errors.nid && <p className="text-red-500 text-sm">{errors.nid.message}</p>}
+              </div>
+
+              <div>
+                <label className="font-semibold">Bike</label>
+                <input
+                  type="text"
+                  {...register("bike", { required: "Bike info is required" })}
+                  className="input input-bordered w-full mt-1"
+                />
+                {errors.bike && <p className="text-red-500 text-sm">{errors.bike.message}</p>}
+              </div>
+            </div>
+
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn-primary text-black text-lg shadow-md mt-4"
+          >
+            Apply as a Rider
+          </button>
+
+        </form>
       </div>
     </div>
   );

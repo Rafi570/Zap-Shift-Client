@@ -2,50 +2,66 @@ import React from "react";
 import { useParams } from "react-router";
 import useAxios from "../../hooks/useAxios";
 import { useQuery } from "@tanstack/react-query";
+import Loading from "../Loading/Loading";
 
 const ParcelTrack = () => {
   const { trackingId } = useParams();
   const axiosInstance = useAxios();
 
-  const { data: trackings = [] } = useQuery({
+  const { data: trackings = [], isLoading } = useQuery({
     queryKey: ["tracking", trackingId],
     queryFn: async () => {
       const res = await axiosInstance.get(`/trackings/${trackingId}/logs`);
       return res.data;
     },
   });
-  return (
-    <div className="p-8">
-      <h2 className="text-4xl">Track your package: {trackingId}</h2>
-      <p>Logs so far: {trackings.length}</p>
 
-      <ul className="timeline timeline-vertical">
-        {trackings.map((log) => (
-          <li key={log._id}>
-            <div className="timeline-start">
-              {new Date(log.createdAt).toLocaleString()}
+  if (isLoading) return <Loading />;
+
+  if (!isLoading && trackings.length === 0) {
+    return (
+      <div className="p-8 text-center bg-white shadow-lg rounded-xl">
+        <h1 className="text-2xl font-bold mb-4 text-red-500">
+          ❌ No Tracking Logs Found
+        </h1>
+        <p className="text-gray-600 text-lg">
+          No tracking information is available for this parcel yet.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6">
+      <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-12 text-center">
+        Parcel Tracking: <span className="text-primary">{trackingId}</span>
+      </h2>
+
+      <div className="relative max-w-3xl mx-auto">
+        {/* Vertical line */}
+        <div className="absolute left-5 top-0 w-1 bg-gray-300 h-full"></div>
+
+        <div className="flex flex-col space-y-10">
+          {trackings.map((log) => (
+            <div key={log._id} className="flex items-start relative">
+              {/* Circle */}
+              <div className="flex flex-col items-center mr-6 z-10">
+                <div className="w-5 h-5 rounded-full bg-primary shadow-lg"></div>
+              </div>
+
+              {/* Card */}
+              <div className="bg-white shadow-md rounded-xl p-5 border border-gray-200 hover:shadow-xl transition duration-300 flex-1">
+                <p className="text-sm text-gray-400 mb-2">
+                  {new Date(log.createdAt).toLocaleString()}
+                </p>
+                <p className="text-gray-900 font-semibold text-lg md:text-xl">
+                  {log.details}
+                </p>
+              </div>
             </div>
-            <div className="timeline-middle">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="h-5 w-5"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="timeline-end timeline-box">
-              <span className="text-xl">{log.details}</span>
-            </div>
-            <hr />
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

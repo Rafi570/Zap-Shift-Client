@@ -8,11 +8,12 @@ import useRole from "../hooks/useRole";
 const DashboardLayout = () => {
   const { role } = useRole();
 
-  const activeClass =
-    "bg-primary text-secondary font-semibold rounded-lg shadow-sm";
-
+  const activeClass = "bg-primary text-secondary font-semibold rounded-lg shadow-sm";
   const baseClass =
     "w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/20 transition-all";
+
+  const navClass = ({ isActive }) =>
+    isActive ? `${baseClass} ${activeClass}` : baseClass;
 
   return (
     <div className="drawer lg:drawer-open max-w-7xl mx-auto">
@@ -21,7 +22,7 @@ const DashboardLayout = () => {
       {/* Drawer Content */}
       <div className="drawer-content flex flex-col">
         <nav className="navbar w-full bg-base-100 shadow-sm">
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu */}
           <label htmlFor="dashboard-drawer" className="btn btn-ghost lg:hidden">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -52,25 +53,29 @@ const DashboardLayout = () => {
       {/* Drawer Sidebar */}
       <div className="drawer-side">
         <label htmlFor="dashboard-drawer" className="drawer-overlay"></label>
-
         <aside className="w-64 min-h-full bg-base-100 border-r p-4">
           <ul className="menu flex flex-col gap-2">
-            {/* Homepage */}
-            <li>
-              <Link className={baseClass} to="/">
-                <CiDeliveryTruck className="text-xl" />
-                <span>Homepage</span>
-              </Link>
-            </li>
+            {/* Homepage (Only admin + rider) */}
+            {(role === "admin" || role === "rider") && (
+              <li>
+                <NavLink to="/dashboard" className={navClass} end>
+                  <CiDeliveryTruck className="text-xl" />
+                  <span>Homepage</span>
+                </NavLink>
+              </li>
+            )}
+            {
+              (role == "user") && (<li>
+                <NavLink to="/dashboard/payment-history" className={navClass} end>
+                  <CiDeliveryTruck className="text-xl" />
+                  <span>Homepage</span>
+                </NavLink>
+              </li>)
+            }
 
             {/* Payment History */}
             <li>
-              <NavLink
-                to="/dashboard/payment-history"
-                className={({ isActive }) =>
-                  isActive ? `${baseClass} ${activeClass}` : baseClass
-                }
-              >
+              <NavLink to="/dashboard/payment-history" className={navClass}>
                 <CiWallet className="text-xl" />
                 <span>Payment History</span>
               </NavLink>
@@ -78,12 +83,7 @@ const DashboardLayout = () => {
 
             {/* My Parcels */}
             <li>
-              <NavLink
-                to="/dashboard/my-parcels"
-                className={({ isActive }) =>
-                  isActive ? `${baseClass} ${activeClass}` : baseClass
-                }
-              >
+              <NavLink to="/dashboard/my-parcels" className={navClass}>
                 <FaMotorcycle className="text-xl" />
                 <span>My Parcels</span>
               </NavLink>
@@ -95,9 +95,7 @@ const DashboardLayout = () => {
                 <li>
                   <NavLink
                     to="/dashboard/users-management"
-                    className={({ isActive }) =>
-                      isActive ? `${baseClass} ${activeClass}` : baseClass
-                    }
+                    className={navClass}
                   >
                     <FaUsers className="text-xl" />
                     <span>Users Management</span>
@@ -105,52 +103,40 @@ const DashboardLayout = () => {
                 </li>
 
                 <li>
-                  <NavLink
-                    to="/dashboard/assign-riders"
-                    className={({ isActive }) =>
-                      isActive ? `${baseClass} ${activeClass}` : baseClass
-                    }
-                  >
+                  <NavLink to="/dashboard/assign-riders" className={navClass}>
                     <FaMotorcycle className="text-xl" />
                     <span>Assign Riders</span>
                   </NavLink>
                 </li>
 
                 <li>
-                  <NavLink
-                    to="/dashboard/approve-riders"
-                    className={({ isActive }) =>
-                      isActive ? `${baseClass} ${activeClass}` : baseClass
-                    }
-                  >
+                  <NavLink to="/dashboard/approve-riders" className={navClass}>
                     <FaCheckCircle className="text-xl" />
                     <span>Approve Riders</span>
                   </NavLink>
                 </li>
               </>
             )}
-            {/* rider Route  */}
+
+            {/* Rider Routes */}
             {role === "rider" && (
               <>
                 <li>
                   <NavLink
                     to="/dashboard/completed-deliveries"
-                    className={({ isActive }) =>
-                      isActive ? `${baseClass} ${activeClass}` : baseClass
-                    }
+                    className={navClass}
                   >
-                    <FaUsers className="text-xl" />
-                    <span>Complete Deliveries</span>
+                    <FaCheckCircle className="text-xl" />
+                    <span>Completed Deliveries</span>
                   </NavLink>
                 </li>
+
                 <li>
                   <NavLink
                     to="/dashboard/assigned-deliveries"
-                    className={({ isActive }) =>
-                      isActive ? `${baseClass} ${activeClass}` : baseClass
-                    }
+                    className={navClass}
                   >
-                    <FaUsers className="text-xl" />
+                    <FaMotorcycle className="text-xl" />
                     <span>Assigned Deliveries</span>
                   </NavLink>
                 </li>

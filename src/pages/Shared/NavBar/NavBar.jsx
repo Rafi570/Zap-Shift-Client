@@ -10,32 +10,56 @@ const NavBar = () => {
     logOut().catch(console.log);
   };
 
+  const activeClass = "text-primary font-semibold border-b-2 border-primary";
+  const baseClass = "hover:text-primary transition-all";
+
+  const navClass = ({ isActive }) => (isActive ? activeClass : baseClass);
+
   const links = (
     <>
       <li>
-        <NavLink to="">Services</NavLink>
+        <NavLink to="/" className={navClass}>
+          Home
+        </NavLink>
       </li>
       <li>
-        <NavLink to="/about">About Us</NavLink>
+        <NavLink to="/about" className={navClass}>
+          About Us
+        </NavLink>
       </li>
       <li>
-        <NavLink to="/coverage">Coverage</NavLink>
+        <NavLink to="/coverage" className={navClass}>
+          Coverage
+        </NavLink>
       </li>
       <li>
-        <NavLink to="/rider">Be a Rider</NavLink>
+        <NavLink to="/send-parcel" className={navClass}>
+          Send Parcel
+        </NavLink>
       </li>
-      <li><NavLink to="/send-parcel">Send Parcel</NavLink></li>
-              {
-            user && <>
-                <li><NavLink to="/dashboard/my-parcels">My Parcels</NavLink></li>
-            </>
-        }
+
+      {user && (
+        <>
+          <li>
+            <NavLink to="/dashboard/my-parcels" className={navClass}>
+              My Parcels
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/dashboard" className={navClass}>
+              Dashboard
+            </NavLink>
+          </li>
+        </>
+      )}
     </>
   );
 
   return (
-    <div className="navbar bg-base-100 shadow-sm">
-      <div className="navbar-start">
+    <div className="navbar bg-base-100 shadow-sm px-2 lg:px-6">
+      {/* LEFT SECTION */}
+      <div className="navbar-start flex items-center gap-2">
+        {/* Mobile Dropdown */}
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
             <svg
@@ -45,36 +69,47 @@ const NavBar = () => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h8m-8 6h16"
+              />
             </svg>
           </div>
           <ul
-            tabIndex="-1"
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+            tabIndex={0}
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow"
           >
             {links}
           </ul>
         </div>
-        {/* <Link className="btn btn-ghost text-xl"> */}
+
+        {/* Logo */}
+        <Link to="/" className="flex items-center">
           <Logo />
-        {/* </Link> */}
+        </Link>
       </div>
 
+      {/* CENTER LINKS (Desktop) */}
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">{links}</ul>
+        <ul className="menu menu-horizontal px-1 flex items-center gap-2">{links}</ul>
       </div>
 
-      <div className="navbar-end">
+      {/* RIGHT SECTION BUTTONS */}
+      <div className="navbar-end flex items-center gap-2">
         {user ? (
-          <button onClick={handleLogOut} className="btn">
+          <button onClick={handleLogOut} className="btn btn-sm btn-outline">
             Log Out
           </button>
         ) : (
-          <Link className="btn" to="/login">
+          <Link className="btn btn-sm btn-outline" to="/login">
             Log In
           </Link>
         )}
-        <Link className="btn btn-primary text-black mx-4" to="/rider">
+
+        {/* Rider Button */}
+        <Link className="btn btn-primary text-black btn-sm" to="/rider">
           Be a Rider
         </Link>
       </div>
